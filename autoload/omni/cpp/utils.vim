@@ -488,7 +488,9 @@ endfunc
 " Extract the cmd of a tag item without regexp
 function! omni#cpp#utils#ExtractCmdFromTagItem(tagItem)
     let line = a:tagItem.cmd
-    let re = '\(\/\^\)\|\(\$\/\)'
+	" The following regexp allows the function to match 
+	" either a / or a ? when searching for the tag command
+	let re = '\([/?]\^\)\|\(\$[/?]\)'
     if match(line, re)!=-1
         let line = substitute(line, re, '', 'g')
         return line
