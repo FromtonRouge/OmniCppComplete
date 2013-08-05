@@ -250,6 +250,17 @@ function! omni#cpp#items#ResolveItemsTypeInfo(contextStack, items)
 
         if omni#cpp#utils#IsTypeInfoValid(typeInfo)
             let szCurrentContext = omni#cpp#utils#GetTypeInfoString(typeInfo)
+            "typeinfo could be a type that's a typeref. CTAGS uses typeref for tagging structs. 
+            "Before it gets assigned as context, check if typeref is
+            "struct and use it instead
+            let szFilter = "v:val.kind=='t'"
+            let tagItem = s:ResolveSymbol(tmpContextStack, typeInfo.value, szFilter)
+
+            if has_key(tagItem,'typeref')
+                if matchstr(tagItem.typeref,'struct') >= 0
+                    let szCurrentContext = substitute(tagItem.typeref,'struct:','','')  
+                endif
+            endif
         endif
         let bSearchDecl = 0
     endfor
