@@ -203,7 +203,7 @@ function! s:GetAllUsingNamespaceMapFromCurrentBuffer(...)
     let includeGuard = (a:0>0)? a:1 : {}
 
     let szBufferName = getreg("%")
-    let szFilePath = omni#cpp#utils#ResolveFilePath(szBufferName)
+    let szFilePath = fnameescape(expand("%:p"))
     let szFilePath = (szFilePath=='')? szBufferName : szFilePath
 
     let namespaceMap = {}

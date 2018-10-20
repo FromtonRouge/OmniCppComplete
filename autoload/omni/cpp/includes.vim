@@ -60,7 +60,7 @@ function! s:GetIncludeListFromCurrentBuffer()
                 let szResolvedInclude = omni#cpp#utils#ResolveFilePath(szIncludeFile)
 
                 " Protection over self inclusion
-                if szResolvedInclude != '' && szResolvedInclude != omni#cpp#utils#ResolveFilePath(getreg('%'))
+                if szResolvedInclude != '' && szResolvedInclude != fnameescape(expand("%:p"))
                     let includePos = curPos
                     if !has_key(alreadyInclude, szResolvedInclude)
                         call extend(listIncludes, [{'pos' : includePos, 'include' : szResolvedInclude}])
