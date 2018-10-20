@@ -283,9 +283,11 @@ function! omni#cpp#namespaces#GetMapFromCurrentBuffer()
 
     call setpos('.', [0, 1, 1, 0])
     let curPos = [1,1]
+    let wrapFlg = 'cW'
     while curPos != [0,0]
-        let curPos = searchpos('\C^using\s\+namespace', 'W')
+        let curPos = searchpos('\C^using\s\+namespace', wrapFlg)
         if curPos != [0,0]
+            let wrapFlg = 'W'
             let szLine = getline('.')
             let startPos = curPos[1]
             let endPos = match(szLine, ';', startPos-1)
