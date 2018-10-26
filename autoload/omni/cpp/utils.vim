@@ -376,6 +376,15 @@ function! omni#cpp#utils#GetResolvedTagItem(namespaces, typeInfo)
     else
         " The type is not resolved
         let tagList = omni#common#utils#TagListNoThrow('^'.szTagQuery.'$')
+        " If nothing was found, try again with leading context namespaces
+        if g:OmniCpp_NamespaceSearch && !len(tagList)
+            for context in keys(g:omni#cpp#namespaces#CacheResolve)
+                let tagList = omni#common#utils#TagListNoThrow('^'.context.'::'.szTagQuery.'$')
+                if len(tagList)
+                    break
+                endif
+            endfor
+        endif
         call filter(tagList, szTagFilter)
 
         if len(tagList)
@@ -387,6 +396,10 @@ function! omni#cpp#utils#GetResolvedTagItem(namespaces, typeInfo)
                 " For each namespace of the namespace list we try to get a tag
                 " that can be in the same scope
                 if g:OmniCpp_NamespaceSearch && &filetype != 'c'
+                    " Consider leading context namespaces here again
+                    for context in keys(g:omni#cpp#namespaces#CacheResolve)
+                        call add(a:namespaces, '::'.context)
+                    endfor
                     for scope in a:namespaces
                         let szTmpScope = omni#cpp#utils#SimplifyScope(scope.'::'.szScopeOfTypeInfo)
                         let result = s:GetTagOfSameScope(tagList, szTmpScope)

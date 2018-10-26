@@ -380,6 +380,12 @@ function! s:GetTypeInfoOfReturnedType(contextStack, szFunctionName)
 
     if tagItem != {}
         let szCmdWithoutVariable = substitute(omni#cpp#utils#ExtractCmdFromTagItem(tagItem), '\C\<'.a:szFunctionName.'\>.*', '', 'g')
+
+        " If it is a constructor, return the class name as function type
+        if szCmdWithoutVariable == ""
+            return {'type': 1, 'value': a:szFunctionName}
+        endif
+
         let tokens = omni#cpp#tokenizer#Tokenize(omni#cpp#utils#GetCodeFromLine(szCmdWithoutVariable))
         let result = omni#cpp#utils#CreateTypeInfo(omni#cpp#utils#ExtractTypeInfoFromTokens(tokens))
         " TODO: Namespace resolution for result
