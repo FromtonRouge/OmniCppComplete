@@ -236,17 +236,16 @@ function! omni#cpp#items#ResolveItemsTypeInfo(contextStack, items)
                 let typeInfo = s:GetTypeInfoOfReturnedType(tmpContextStack, szSymbol)
             endif
 
-            " typeinfo could be a type that's a typeref. CTAGS uses typeref for tagging structs. 
-            " Before it gets assigned as context, check if typeref is
-            " struct and use it instead
-            let tagItem = s:ResolveSymbol(tmpContextStack, typeInfo.value, "v:val.kind=='t'")
-            if has_key(tagItem,'typeref')
-                if matchstr(tagItem.typeref,'struct') >= 0
-                    " Hack typeInfo.value
-                    let typeInfo.value = substitute(tagItem.typeref,'struct:','','')
+            " Check if typeref is a struct and use it instead
+            if typeInfo != {}
+                let szFilter = "v:val.kind=='t'"
+                let tagItem = s:ResolveSymbol(tmpContextStack, typeInfo.value, szFilter)
+                if has_key(tagItem, 'typeref')
+                    if matchstr(tagItem.typeref, 'struct') >= 0
+                        let typeInfo.value = substitute(tagItem.typeref, 'struct:', '', '')
+                    endif
                 endif
             endif
-
         elseif curItem.kind == 'itemThis'
             if len(a:contextStack)
                 let typeInfo = omni#cpp#utils#CreateTypeInfo(substitute(a:contextStack[0], '^::', '', 'g'))
